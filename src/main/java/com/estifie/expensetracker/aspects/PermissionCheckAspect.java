@@ -17,25 +17,31 @@ import java.util.Arrays;
 @Aspect
 @Component
 public class PermissionCheckAspect {
-    @Before("@annotation(RequiresPermission)")
+    @Before("@annotation(requiresPermission)")
     public void checkPermission(RequiresPermission requiresPermission) {
-        checkSinglePermission(requiresPermission.value().name());
+        if (!checkSinglePermission(requiresPermission.value().name())) {
+            throw new AuthorizationException("Permission denied.");
+        }
     }
 
-    @Before("@annotation(RequiresAnyPermission)")
+    @Before("@annotation(requiresAnyPermission)")
     public void checkAnyPermission(RequiresAnyPermission requiresAnyPermission) {
         boolean hasPermission = Arrays.stream(requiresAnyPermission.value())
                 .anyMatch(permission -> checkSinglePermission(permission.name()));
 
         if (!hasPermission) {
-            throw new AuthorizationException("At least one permission is required.");
+            throw new AuthorizationException("Permission denied.");
         }
     }
 
     @Before("@annotation(requiresAllPermissions)")
     public void checkAllPermissions(RequiresAllPermissions requiresAllPermissions) {
-        Arrays.stream(requiresAllPermissions.value())
-                .forEach(permission -> checkSinglePermission(permission.name()));
+        boolean hasPermission = Arrays.stream(requiresAllPermissions.value())
+                .allMatch(permission -> checkSinglePermission(permission.name()));
+
+        if (!hasPermission) {
+            throw new AuthorizationException("Permission denied.");
+        }
     }
 
     private boolean checkSinglePermission(String permission) {
@@ -43,14 +49,10 @@ public class PermissionCheckAspect {
                 .getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AuthorizationException("User is not authenticated.");
+            return false;
         }
 
-        if (!authentication.getAuthorities()
-                .contains(new SimpleGrantedAuthority(permission))) {
-            throw new AuthorizationException("User does not have required permission: " + permission);
-        }
-
-        return true;
+        return authentication.getAuthorities()
+                .contains(new SimpleGrantedAuthority(permission));
     }
 }
