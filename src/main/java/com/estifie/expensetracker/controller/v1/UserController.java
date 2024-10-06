@@ -5,6 +5,7 @@ import com.estifie.expensetracker.dto.user.UserGrantPermissionDTO;
 import com.estifie.expensetracker.dto.user.UserRevokePermissionDTO;
 import com.estifie.expensetracker.enums.Permission;
 import com.estifie.expensetracker.response.ApiResponse;
+import com.estifie.expensetracker.response.auth.UserPermissionsResponse;
 import com.estifie.expensetracker.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -35,9 +36,8 @@ public class UserController {
 
     @GetMapping("/{username}/permissions")
     @RequiresAnyPermission({Permission.MANAGE_PERMISSIONS, Permission.VIEW_PERMISSIONS})
-    public ResponseEntity<ApiResponse<Void>> getPermissions(@PathVariable String username) {
-        userService.getPermissions(username);
-        return ResponseEntity.ok(ApiResponse.success());
+    public ResponseEntity<ApiResponse<UserPermissionsResponse>> getPermissions(@PathVariable String username) {
+        return ResponseEntity.ok(ApiResponse.<UserPermissionsResponse>success().data(new UserPermissionsResponse(userService.getPermissions(username))));
     }
 
 }
