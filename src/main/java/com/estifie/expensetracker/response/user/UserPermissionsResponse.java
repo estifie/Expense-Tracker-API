@@ -1,4 +1,4 @@
-package com.estifie.expensetracker.response.auth;
+package com.estifie.expensetracker.response.user;
 
 import java.util.Set;
 
