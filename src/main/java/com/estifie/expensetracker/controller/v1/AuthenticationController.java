@@ -29,6 +29,7 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponse<UserLoginResponse>> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         String token = authenticationService.login(userLoginDTO);
 
-        return ResponseEntity.ok(ApiResponse.<UserLoginResponse>success().data(new UserLoginResponse(token)));
+        return ResponseEntity.ok(ApiResponse.<UserLoginResponse>success()
+                .data(new UserLoginResponse(token)));
     }
 }

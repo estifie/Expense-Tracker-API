@@ -5,5 +5,6 @@ import com.estifie.expensetracker.dto.auth.UserRegisterDTO;
 
 public interface AuthenticationService {
     void register(UserRegisterDTO userRegisterDTO);
+
     String login(UserLoginDTO userLoginDTO);
 }

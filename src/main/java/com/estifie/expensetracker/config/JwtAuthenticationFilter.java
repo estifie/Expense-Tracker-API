@@ -24,22 +24,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtServiceImpl jwtServiceImpl;
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(
-            JwtServiceImpl jwtServiceImpl,
-            UserDetailsService userDetailsService,
-            HandlerExceptionResolver handlerExceptionResolver
-    ) {
+    public JwtAuthenticationFilter(JwtServiceImpl jwtServiceImpl, UserDetailsService userDetailsService, HandlerExceptionResolver handlerExceptionResolver) {
         this.jwtServiceImpl = jwtServiceImpl;
         this.userDetailsService = userDetailsService;
         this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-            ) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authenticationHeader = request.getHeader("Authorization");
 
         if (authenticationHeader == null || !authenticationHeader.startsWith("Bearer ")) {
@@ -51,7 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String jwt = authenticationHeader.split(" ")[1].trim();
             final String username = jwtServiceImpl.extractUsername(jwt);
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Authentication authentication = SecurityContextHolder.getContext()
+                    .getAuthentication();
 
             if (username == null || authentication != null) {
                 filterChain.doFilter(request, response);
@@ -60,19 +53,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            if(!jwtServiceImpl.isTokenValid(jwt, userDetails)) {
+            if (!jwtServiceImpl.isTokenValid(jwt, userDetails)) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            SecurityContextHolder.getContext()
+                    .setAuthentication(authenticationToken);
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {

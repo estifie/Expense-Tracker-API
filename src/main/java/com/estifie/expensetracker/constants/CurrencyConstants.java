@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class CurrencyConstants {
-
     private final Set<String> supportedCurrencies = new HashSet<>();
 
     @PostConstruct

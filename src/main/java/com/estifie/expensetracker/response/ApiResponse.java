@@ -11,18 +11,6 @@ public class ApiResponse<T> {
     public ApiResponse() {
     }
 
-    public T getData() {
-        return data;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
     public static <T> ApiResponse<T> success() {
         ApiResponse<T> response = new ApiResponse<>();
         response.status = "success";
@@ -33,6 +21,18 @@ public class ApiResponse<T> {
         ApiResponse<T> response = new ApiResponse<>();
         response.status = "error";
         return response;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public ApiResponse<T> message(String message) {

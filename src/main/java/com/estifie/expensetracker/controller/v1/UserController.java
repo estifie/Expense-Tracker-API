@@ -37,7 +37,8 @@ public class UserController {
     @GetMapping("/{username}/permissions")
     @RequiresAnyPermission({Permission.MANAGE_PERMISSIONS, Permission.VIEW_PERMISSIONS})
     public ResponseEntity<ApiResponse<UserPermissionsResponse>> getPermissions(@PathVariable String username) {
-        return ResponseEntity.ok(ApiResponse.<UserPermissionsResponse>success().data(new UserPermissionsResponse(userService.getPermissions(username))));
+        return ResponseEntity.ok(ApiResponse.<UserPermissionsResponse>success()
+                .data(new UserPermissionsResponse(userService.getPermissions(username))));
     }
 
 }

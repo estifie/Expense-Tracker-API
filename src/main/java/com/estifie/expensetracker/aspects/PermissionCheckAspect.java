@@ -3,7 +3,6 @@ package com.estifie.expensetracker.aspects;
 import com.estifie.expensetracker.annotations.RequiresAllPermissions;
 import com.estifie.expensetracker.annotations.RequiresAnyPermission;
 import com.estifie.expensetracker.annotations.RequiresPermission;
-import com.estifie.expensetracker.enums.Permission;
 import com.estifie.expensetracker.exception.auth.AuthorizationException;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -19,7 +18,8 @@ import java.util.Arrays;
 public class PermissionCheckAspect {
     @Before("@annotation(requiresPermission)")
     public void checkPermission(RequiresPermission requiresPermission) {
-        if (!checkSinglePermission(requiresPermission.value().name())) {
+        if (!checkSinglePermission(requiresPermission.value()
+                .name())) {
             throw new AuthorizationException("Permission denied.");
         }
     }

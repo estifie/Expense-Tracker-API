@@ -5,10 +5,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -43,10 +41,27 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> permissions = new HashSet<>();
 
+    public User() {
+        this.id = new ULID().nextULID();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.deletedAt = null;
+    }
+
+    public User(String username, String password) {
+        this.id = new ULID().nextULID();
+        this.username = username;
+        this.password = password;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.deletedAt = null;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return permissions.stream()
-                .map(SimpleGrantedAuthority::new).toList();
+                .map(SimpleGrantedAuthority::new)
+                .toList();
     }
 
     @Override
@@ -67,22 +82,6 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return deactivatedAt == null;
-    }
-
-    public User() {
-        this.id = new ULID().nextULID();
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.deletedAt = null;
-    }
-
-    public User(String username, String password) {
-        this.id = new ULID().nextULID();
-        this.username = username;
-        this.password = password;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.deletedAt = null;
     }
 
     @PreUpdate

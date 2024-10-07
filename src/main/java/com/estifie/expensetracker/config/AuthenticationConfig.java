@@ -1,6 +1,5 @@
 package com.estifie.expensetracker.config;
 
-import com.estifie.expensetracker.exception.user.UserNotFoundException;
 import com.estifie.expensetracker.service.UserServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
