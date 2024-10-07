@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CurrencyCacheTest {
+public class CurrencyCacheServiceTest {
     private CurrencyCacheServiceImpl currencyCacheService;
 
     @BeforeEach
