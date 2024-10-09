@@ -1,5 +1,6 @@
 package com.estifie.expensetracker.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -22,13 +23,14 @@ public class Expense {
 
     @Column
     private String currencyCode;
-    
+
     @Column()
     @Size(max = 1024, message = "Note must be less than 1024 characters")
     private String note;
 
-    @ManyToOne
-    // @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @CreationTimestamp
