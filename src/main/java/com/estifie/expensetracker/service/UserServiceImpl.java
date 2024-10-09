@@ -95,6 +95,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    public void grantPermissionBulk(String username, Set<String> permissionNames) {
+        User user = this.findByUsername(username);
+        user.getPermissions().addAll(permissionNames);
+        userRepository.save(user);
+    }
+
     public void revokePermission(String username, String permissionName) {
         User user = this.findByUsername(username);
         user.getPermissions().remove(permissionName);

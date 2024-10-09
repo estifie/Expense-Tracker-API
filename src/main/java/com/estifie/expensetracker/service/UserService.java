@@ -38,6 +38,8 @@ public interface UserService {
 
     void grantPermission(String username, String permissionName);
 
+    void grantPermissionBulk(String username, Set<String> permissionNames);
+
     void revokePermission(String username, String permissionName);
 
     Set<String> getPermissions(String username);
