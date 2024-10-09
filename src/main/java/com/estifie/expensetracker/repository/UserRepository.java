@@ -8,9 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-// deactivated can still be found but it is banned
-// deleted cannot be found nor logged in
-
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u FROM User u WHERE u.username = ?1 AND u.deletedAt IS NULL")
