@@ -63,6 +63,8 @@ public class CurrencyConversionServiceTest {
         BigDecimal result = currencyConversionService.convertCurrency(fromCurrency, toCurrency, BigDecimal.ONE);
 
         assertEquals(exchangeRate, result);
+
+        verify(currencyCacheService).put(fromCurrency + toCurrency, exchangeRate);
     }
 
     @Test
@@ -76,5 +78,7 @@ public class CurrencyConversionServiceTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), isNull(), any(ParameterizedTypeReference.class))).thenReturn(ResponseEntity.ok(apiResponse));
 
         assertThrows(CurrencyConversionException.class, () -> currencyConversionService.convertCurrency(fromCurrency, toCurrency, BigDecimal.ONE));
+
+        verify(currencyCacheService, never()).put(anyString(), any(BigDecimal.class));
     }
 }
