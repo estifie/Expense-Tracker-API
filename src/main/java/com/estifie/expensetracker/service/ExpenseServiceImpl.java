@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseRepository expenseRepository;
@@ -17,6 +19,10 @@ public class ExpenseServiceImpl implements ExpenseService {
     public ExpenseServiceImpl(ExpenseRepository expenseRepository, UserService userService) {
         this.expenseRepository = expenseRepository;
         this.userService = userService;
+    }
+
+    public Optional<Expense> findById(String id) {
+        return expenseRepository.findById(id);
     }
 
     public void create(String username, ExpenseCreateDTO expenseCreateDTO) {
