@@ -6,6 +6,7 @@ import com.estifie.expensetracker.dto.user.UserRevokePermissionDTO;
 import com.estifie.expensetracker.enums.Permission;
 import com.estifie.expensetracker.response.ApiResponse;
 import com.estifie.expensetracker.response.user.UserPermissionsResponse;
+import com.estifie.expensetracker.response.user.UsersResponse;
 import com.estifie.expensetracker.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +27,7 @@ public class UserController {
         userService.grantPermission(username, userGrantPermissionDTO.getPermission());
         return ResponseEntity.ok(ApiResponse.success());
     }
-
+    
     @DeleteMapping("/{username}/permissions")
     @RequiresAnyPermission({Permission.MANAGE_PERMISSIONS, Permission.REVOKE_PERMISSION})
     public ResponseEntity<ApiResponse<Void>> revokePermission(@PathVariable String username, @RequestBody @Validated UserRevokePermissionDTO userRevokePermissionDTO) {
@@ -39,6 +40,13 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserPermissionsResponse>> getPermissions(@PathVariable String username) {
         return ResponseEntity.ok(ApiResponse.<UserPermissionsResponse>success()
                 .data(new UserPermissionsResponse(userService.getPermissions(username))));
+    }
+
+    @GetMapping("/")
+    @RequiresAnyPermission({Permission.MANAGE_USERS, Permission.VIEW_USERS})
+    public ResponseEntity<ApiResponse<UsersResponse>> getUsers() {
+        return ResponseEntity.ok(ApiResponse.<UsersResponse>success()
+                .data(new UsersResponse(userService.findAll())));
     }
 
 }
