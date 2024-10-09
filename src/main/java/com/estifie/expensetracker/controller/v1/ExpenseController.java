@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/v1/expenses")
 public class ExpenseController {
@@ -24,7 +26,8 @@ public class ExpenseController {
     @RequiresAnyPermission({Permission.OWNERSHIP, Permission.MANAGE_EXPENSES, Permission.VIEW_EXPENSES})
     public ResponseEntity<ApiResponse<Page<Expense>>> getExpensesByUsername(@PathVariable String username, @RequestParam int page, @RequestParam int size) {
         return ResponseEntity.ok(ApiResponse.<Page<Expense>>success()
-                .data(expenseService.findByUsername(username, PageRequest.of(page, size))));
+                .data(expenseService.findByUsername(username,
+                        PageRequest.of(page, size))));
     }
 
     @PostMapping("/user/{username}")
@@ -33,4 +36,20 @@ public class ExpenseController {
         expenseService.create(username, expenseCreateDTO);
         return ResponseEntity.ok(ApiResponse.success());
     }
+
+    @GetMapping("/{id}")
+    @RequiresAnyPermission({Permission.OWNERSHIP, Permission.MANAGE_EXPENSES, Permission.VIEW_EXPENSES})
+    public ResponseEntity<ApiResponse<Optional<Expense>>> getExpense(@PathVariable String id) {
+        return ResponseEntity.ok(ApiResponse.<Optional<Expense>>success()
+                .data(expenseService.findById(id)));
+    }
+
+    @GetMapping("/")
+    @RequiresAnyPermission({Permission.MANAGE_EXPENSES, Permission.VIEW_EXPENSES})
+    public ResponseEntity<ApiResponse<Page<Expense>>> getExpenses(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(ApiResponse.<Page<Expense>>success()
+                .data(expenseService.findAll(PageRequest.of(page, size))));
+    }
+
+
 }
