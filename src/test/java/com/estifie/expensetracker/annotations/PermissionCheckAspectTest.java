@@ -4,6 +4,7 @@ import com.estifie.expensetracker.aspects.PermissionCheckAspect;
 import com.estifie.expensetracker.enums.Permission;
 import com.estifie.expensetracker.exception.auth.AuthorizationException;
 import com.estifie.expensetracker.service.UserServiceImpl;
+import org.aspectj.lang.JoinPoint;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +29,10 @@ public class PermissionCheckAspectTest {
         RequiresPermission requiresPermission = mock(RequiresPermission.class);
         when(requiresPermission.value()).thenReturn(Permission.MANAGE_PERMISSIONS);
 
-        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkPermission(requiresPermission));
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        assertThrows(AuthorizationException.class,
+                () -> permissionCheckAspect.checkPermission(joinPoint, requiresPermission));
     }
 
     @Test
@@ -37,7 +41,9 @@ public class PermissionCheckAspectTest {
         RequiresPermission requiresPermission = mock(RequiresPermission.class);
         when(requiresPermission.value()).thenReturn(Permission.MANAGE_PERMISSIONS);
 
-        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkPermission(requiresPermission));
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkPermission(joinPoint, requiresPermission));
     }
 
     @Test
@@ -46,7 +52,9 @@ public class PermissionCheckAspectTest {
         RequiresPermission requiresPermission = mock(RequiresPermission.class);
         when(requiresPermission.value()).thenReturn(Permission.MANAGE_PERMISSIONS);
 
-        permissionCheckAspect.checkPermission(requiresPermission);
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        permissionCheckAspect.checkPermission(joinPoint, requiresPermission);
     }
 
     @Test
@@ -55,7 +63,11 @@ public class PermissionCheckAspectTest {
         RequiresAnyPermission requiresAnyPermission = mock(RequiresAnyPermission.class);
         when(requiresAnyPermission.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkAnyPermission(requiresAnyPermission));
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        assertThrows(AuthorizationException.class,
+                () -> permissionCheckAspect.checkAnyPermission(joinPoint,
+                        requiresAnyPermission));
     }
 
     @Test
@@ -64,7 +76,9 @@ public class PermissionCheckAspectTest {
         RequiresAnyPermission requiresAnyPermission = mock(RequiresAnyPermission.class);
         when(requiresAnyPermission.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkAnyPermission(requiresAnyPermission));
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkAnyPermission(joinPoint, requiresAnyPermission));
     }
 
     @Test
@@ -73,7 +87,9 @@ public class PermissionCheckAspectTest {
         RequiresAnyPermission requiresAnyPermission = mock(RequiresAnyPermission.class);
         when(requiresAnyPermission.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        permissionCheckAspect.checkAnyPermission(requiresAnyPermission);
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        permissionCheckAspect.checkAnyPermission(joinPoint, requiresAnyPermission);
     }
 
     @Test
@@ -82,7 +98,9 @@ public class PermissionCheckAspectTest {
         RequiresAnyPermission requiresAnyPermission = mock(RequiresAnyPermission.class);
         when(requiresAnyPermission.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        permissionCheckAspect.checkAnyPermission(requiresAnyPermission);
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        permissionCheckAspect.checkAnyPermission(joinPoint, requiresAnyPermission);
     }
 
     @Test
@@ -91,7 +109,9 @@ public class PermissionCheckAspectTest {
         RequiresAnyPermission requiresAnyPermission = mock(RequiresAnyPermission.class);
         when(requiresAnyPermission.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        permissionCheckAspect.checkAnyPermission(requiresAnyPermission);
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        permissionCheckAspect.checkAnyPermission(joinPoint, requiresAnyPermission);
     }
 
     @Test
@@ -100,7 +120,9 @@ public class PermissionCheckAspectTest {
         RequiresAllPermissions requiresAllPermissions = mock(RequiresAllPermissions.class);
         when(requiresAllPermissions.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkAllPermissions(requiresAllPermissions));
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkAllPermissions(joinPoint, requiresAllPermissions));
     }
 
     @Test
@@ -109,7 +131,9 @@ public class PermissionCheckAspectTest {
         RequiresAllPermissions requiresAllPermissions = mock(RequiresAllPermissions.class);
         when(requiresAllPermissions.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkAllPermissions(requiresAllPermissions));
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkAllPermissions(joinPoint, requiresAllPermissions));
     }
 
     @Test
@@ -118,7 +142,9 @@ public class PermissionCheckAspectTest {
         RequiresAllPermissions requiresAllPermissions = mock(RequiresAllPermissions.class);
         when(requiresAllPermissions.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkAllPermissions(requiresAllPermissions));
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        assertThrows(AuthorizationException.class, () -> permissionCheckAspect.checkAllPermissions(joinPoint, requiresAllPermissions));
     }
 
     @Test
@@ -127,7 +153,9 @@ public class PermissionCheckAspectTest {
         RequiresAllPermissions requiresAllPermissions = mock(RequiresAllPermissions.class);
         when(requiresAllPermissions.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        permissionCheckAspect.checkAllPermissions(requiresAllPermissions);
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        permissionCheckAspect.checkAllPermissions(joinPoint, requiresAllPermissions);
     }
 
     @Test
@@ -136,6 +164,8 @@ public class PermissionCheckAspectTest {
         RequiresAllPermissions requiresAllPermissions = mock(RequiresAllPermissions.class);
         when(requiresAllPermissions.value()).thenReturn(new Permission[]{Permission.MANAGE_PERMISSIONS, Permission.GRANT_PERMISSION});
 
-        permissionCheckAspect.checkAllPermissions(requiresAllPermissions);
+        JoinPoint joinPoint = mock(JoinPoint.class);
+
+        permissionCheckAspect.checkAllPermissions(joinPoint, requiresAllPermissions);
     }
 }
