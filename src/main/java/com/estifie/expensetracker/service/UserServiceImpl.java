@@ -91,15 +91,13 @@ public class UserServiceImpl implements UserService {
 
     public void grantPermission(String username, String permissionName) {
         User user = this.findByUsername(username);
-        user.getPermissions()
-                .add(permissionName);
+        user.getPermissions().add(permissionName);
         userRepository.save(user);
     }
 
     public void revokePermission(String username, String permissionName) {
         User user = this.findByUsername(username);
-        user.getPermissions()
-                .remove(permissionName);
+        user.getPermissions().remove(permissionName);
         userRepository.save(user);
     }
 

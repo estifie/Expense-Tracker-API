@@ -17,7 +17,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     private final RestTemplate restTemplate;
     private final String currencyConversionApiUrl;
     private final String currencyConversionApiKey;
-
+    
     public CurrencyConversionServiceImpl(CurrencyCacheService currencyCacheService, RestTemplate restTemplate, @Value("${currency-conversion.api.url}") String currencyConversionApiUrl, @Value("${currency-conversion.api.key}") String currencyConversionApiKey) {
         this.currencyCacheService = currencyCacheService;
         this.restTemplate = restTemplate;
