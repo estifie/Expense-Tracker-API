@@ -1,5 +1,7 @@
 package com.estifie.expensetracker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,16 +15,20 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+// ignore the id and password when returning the user object
+
 @Table(name = "users")
 @Entity
 public class User implements UserDetails {
     @Id
+    @JsonIgnore
     private String id;
 
     @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @CreationTimestamp
@@ -87,6 +93,13 @@ public class User implements UserDetails {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        return id != null && id.equals(((User) o).id);
     }
 
     public String getId() {
