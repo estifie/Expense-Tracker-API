@@ -1,8 +1,13 @@
 package com.estifie.expensetracker.enums;
 
 public enum Permission {
-    // Permissions that are related to permissions.
+    /**
+     * Permission for user to access its own resources.
+     */
+    OWNERSHIP,
 
+    // Permissions that are related to permissions.
+    
     /**
      * Permission to manage permissions.
      */
