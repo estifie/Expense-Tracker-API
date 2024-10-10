@@ -11,6 +11,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import java.util.Set;
+
 @Configuration
 public class UserSeeder implements ApplicationRunner {
     private static final Logger logger = LoggerFactory.getLogger(UserSeeder.class);
@@ -29,9 +31,7 @@ public class UserSeeder implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         if (args.getOptionValues("seeder") != null)
-            if (args.getOptionValues("seeder")
-                    .getFirst()
-                    .equals("user")) {
+            if (args.getOptionValues("seeder").getFirst().equals("user")) {
                 seedUser();
             }
     }
@@ -51,7 +51,7 @@ public class UserSeeder implements ApplicationRunner {
         try {
             userRepository.findByUsername(username);
 
-            userService.grantPermission(username, "MANAGE_PERMISSIONS");
+            userService.grantPermissionBulk(username, Set.of("MANAGE_PERMISSIONS", "MANAGE_USERS", "MANAGE_EXPENSES"));
         } catch (Exception e) {
             logger.error("Seeding user failed. An error occurred while registering user");
             return;
