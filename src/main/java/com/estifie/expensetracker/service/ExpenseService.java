@@ -8,13 +8,13 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface ExpenseService {
-    Optional<Expense> findById(String id);
+    Optional<Expense> findById(String id, boolean fetchDeleted);
 
     void create(String username, ExpenseCreateDTO expenseCreateDTO);
 
     void delete(String id);
 
-    Page<Expense> findByUsername(String username, Pageable pageable);
+    Page<Expense> findByUsername(String username, Pageable pageable, boolean fetchDeleted);
 
-    Page<Expense> findAll(Pageable pageable);
+    Page<Expense> findAll(Pageable pageable, boolean fetchDeleted);
 }

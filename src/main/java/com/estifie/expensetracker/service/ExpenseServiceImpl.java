@@ -21,8 +21,8 @@ public class ExpenseServiceImpl implements ExpenseService {
         this.userService = userService;
     }
 
-    public Optional<Expense> findById(String id) {
-        return expenseRepository.findById(id);
+    public Optional<Expense> findById(String id, boolean fetchDeleted) {
+        return fetchDeleted ? expenseRepository.findById(id) : expenseRepository.findByIdAndDeletedAtIsNull(id);
     }
 
     public void create(String username, ExpenseCreateDTO expenseCreateDTO) {
@@ -39,11 +39,11 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseRepository.deleteById(id);
     }
 
-    public Page<Expense> findByUsername(String username, Pageable pageable) {
-        return expenseRepository.findByUser(userService.findByUsername(username), pageable);
+    public Page<Expense> findByUsername(String username, Pageable pageable, boolean fetchDeleted) {
+        return fetchDeleted ? expenseRepository.findByUser(userService.findByUsername(username), pageable) : expenseRepository.findByUserAndDeletedAtIsNull(userService.findByUsername(username), pageable);
     }
 
-    public Page<Expense> findAll(Pageable pageable) {
-        return expenseRepository.findAll(pageable);
+    public Page<Expense> findAll(Pageable pageable, boolean fetchDeleted) {
+        return fetchDeleted ? expenseRepository.findAll(pageable) : expenseRepository.findAllByDeletedAtIsNull(pageable);
     }
 }
