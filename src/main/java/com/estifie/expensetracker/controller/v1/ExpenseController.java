@@ -26,8 +26,7 @@ public class ExpenseController {
     @RequiresAnyPermission({Permission.OWNERSHIP, Permission.MANAGE_EXPENSES, Permission.VIEW_EXPENSES})
     public ResponseEntity<ApiResponse<Page<Expense>>> getExpensesByUsername(@PathVariable String username, @RequestParam int page, @RequestParam int size) {
         return ResponseEntity.ok(ApiResponse.<Page<Expense>>success()
-                .data(expenseService.findByUsername(username,
-                        PageRequest.of(page, size))));
+                .data(expenseService.findByUsername(username, PageRequest.of(page, size), false)));
     }
 
     @PostMapping("/user/{username}")
@@ -41,15 +40,14 @@ public class ExpenseController {
     @RequiresAnyPermission({Permission.OWNERSHIP, Permission.MANAGE_EXPENSES, Permission.VIEW_EXPENSES})
     public ResponseEntity<ApiResponse<Optional<Expense>>> getExpense(@PathVariable String id) {
         return ResponseEntity.ok(ApiResponse.<Optional<Expense>>success()
-                .data(expenseService.findById(id)));
+                .data(expenseService.findById(id, false)));
     }
 
     @GetMapping("/")
     @RequiresAnyPermission({Permission.MANAGE_EXPENSES, Permission.VIEW_EXPENSES})
     public ResponseEntity<ApiResponse<Page<Expense>>> getExpenses(@RequestParam int page, @RequestParam int size) {
         return ResponseEntity.ok(ApiResponse.<Page<Expense>>success()
-                .data(expenseService.findAll(PageRequest.of(page, size))));
+                .data(expenseService.findAll(PageRequest.of(page, size), false)));
     }
-
 
 }
