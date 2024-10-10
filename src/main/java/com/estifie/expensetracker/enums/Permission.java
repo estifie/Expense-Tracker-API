@@ -7,7 +7,7 @@ public enum Permission {
     OWNERSHIP,
 
     // Permissions that are related to permissions.
-    
+
     /**
      * Permission to manage permissions.
      */
@@ -88,4 +88,26 @@ public enum Permission {
      * Permission to batch delete expenses.
      */
     BATCH_DELETE_EXPENSES,
+
+    // Permissions that are related to subscriptions
+
+    /**
+     * Permission to manage subscriptions.
+     */
+    MANAGE_SUBSCRIPTIONS,
+
+    /**
+     * Permission to view subscriptions.
+     */
+    VIEW_SUBSCRIPTIONS,
+
+    /**
+     * Permission to hard delete a subscription.
+     */
+    HARD_DELETE_SUBSCRIPTION,
+
+    /**
+     * Permission to batch delete subscriptions.
+     */
+    BATCH_DELETE_SUBSCRIPTIONS
 }
