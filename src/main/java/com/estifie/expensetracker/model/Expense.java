@@ -40,19 +40,22 @@ public class Expense {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column
+    private LocalDateTime deletedAt;
+
+
     public Expense() {
         this.id = new ULID().nextULID();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.deletedAt = null;
     }
 
     public Expense(BigDecimal amount, String currencyCode, String note) {
-        this.id = new ULID().nextULID();
+        this();
         this.amount = amount;
         this.currencyCode = currencyCode;
         this.note = note;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
@@ -123,5 +126,13 @@ public class Expense {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }
