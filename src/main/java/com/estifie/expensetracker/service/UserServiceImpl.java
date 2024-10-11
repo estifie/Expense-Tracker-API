@@ -1,5 +1,6 @@
 package com.estifie.expensetracker.service;
 
+import com.estifie.expensetracker.enums.Permission;
 import com.estifie.expensetracker.exception.user.UserNotFoundException;
 import com.estifie.expensetracker.model.User;
 import com.estifie.expensetracker.repository.UserRepository;
@@ -39,6 +40,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllDeactivated();
     }
 
+    public boolean hasPermission(String username, String permissionName) {
+        User user = this.findByUsername(username);
+        return user.getPermissions().contains(permissionName);
+    }
+
     public long countAll() {
         return userRepository.countAll();
     }
@@ -67,10 +73,18 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    public void delete(String username) {
+    public void delete(String username, boolean hardDelete) {
         User user = this.findByUsername(username);
+
         user.setDeletedAt(LocalDateTime.now());
-        userRepository.save(user);
+
+        boolean canHardDelete = this.hasPermission(username, Permission.HARD_DELETE_USER.name());
+
+        if (canHardDelete && hardDelete) {
+            userRepository.delete(user);
+        } else {
+            userRepository.save(user);
+        }
     }
 
     public void restore(String username) {

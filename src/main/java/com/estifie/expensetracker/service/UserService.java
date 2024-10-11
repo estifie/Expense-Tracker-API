@@ -16,6 +16,8 @@ public interface UserService {
 
     List<User> findAllDeactivated();
 
+    boolean hasPermission(String username, String permissionName);
+
     long countAll();
 
     long countActive();
@@ -28,7 +30,7 @@ public interface UserService {
 
     void activate(String username);
 
-    void delete(String username);
+    void delete(String username, boolean hardDelete);
 
     void restore(String username);
 
