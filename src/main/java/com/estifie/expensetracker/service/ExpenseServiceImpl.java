@@ -1,6 +1,8 @@
 package com.estifie.expensetracker.service;
 
 import com.estifie.expensetracker.dto.expense.ExpenseCreateDTO;
+import com.estifie.expensetracker.enums.Permission;
+import com.estifie.expensetracker.exception.expense.ExpenseNotFoundException;
 import com.estifie.expensetracker.exception.user.UserNotFoundException;
 import com.estifie.expensetracker.model.Expense;
 import com.estifie.expensetracker.model.User;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -35,8 +38,21 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseRepository.save(expense);
     }
 
-    public void delete(String id) {
-        expenseRepository.deleteById(id);
+    public void delete(String id, boolean hardDelete) {
+        Expense expense =
+                expenseRepository.findById(id)
+                        .orElseThrow(ExpenseNotFoundException::new);
+
+        expense.setDeletedAt(LocalDateTime.now());
+
+        boolean canHardDelete = userService.hasPermission(expense.getUser()
+                .getUsername(), Permission.HARD_DELETE_EXPENSE.name());
+
+        if (hardDelete && canHardDelete) {
+            expenseRepository.deleteById(id);
+        } else {
+            expenseRepository.save(expense);
+        }
     }
 
     public Page<Expense> findByUsername(String username, Pageable pageable, boolean fetchDeleted) {

@@ -12,7 +12,7 @@ public interface SubscriptionService {
 
     void deactivate(String id);
 
-    void delete(String id);
+    void delete(String id, boolean hardDelete);
 
     Optional<Subscription> findById(String id, boolean fetchDeleted);
 

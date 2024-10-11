@@ -3,10 +3,11 @@ package com.estifie.expensetracker.controller.v1;
 import com.estifie.expensetracker.annotations.RequiresAnyPermission;
 import com.estifie.expensetracker.dto.subscription.SubscriptionCreateDTO;
 import com.estifie.expensetracker.enums.Permission;
-import com.estifie.expensetracker.model.Subscription;
+import com.estifie.expensetracker.exception.subscription.SubscriptionNotFoundException;
 import com.estifie.expensetracker.response.ApiResponse;
+import com.estifie.expensetracker.response.subscription.SubscriptionResponse;
+import com.estifie.expensetracker.response.subscription.SubscriptionsResponse;
 import com.estifie.expensetracker.service.SubscriptionService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,9 @@ public class SubscriptionController {
 
     @GetMapping("/user/{username}")
     @RequiresAnyPermission({Permission.OWNERSHIP, Permission.MANAGE_SUBSCRIPTIONS, Permission.VIEW_SUBSCRIPTIONS})
-    public ResponseEntity<ApiResponse<Page<Subscription>>> getSubscriptionsByUsername(@PathVariable String username, @RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(ApiResponse.<Page<Subscription>>success()
-                .data(subscriptionService.findByUsername(username, PageRequest.of(page, size), false)));
+    public ResponseEntity<ApiResponse<SubscriptionsResponse>> getSubscriptionsByUsername(@PathVariable String username, @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(ApiResponse.<SubscriptionsResponse>success()
+                .data(SubscriptionsResponse.fromPaginatedSubscriptions(subscriptionService.findByUsername(username, PageRequest.of(page, size), false))));
     }
 
     @PostMapping("/user/{username}")
@@ -36,8 +37,9 @@ public class SubscriptionController {
 
     @DeleteMapping("/{id}")
     @RequiresAnyPermission({Permission.OWNERSHIP, Permission.MANAGE_SUBSCRIPTIONS})
-    public ResponseEntity<ApiResponse<Void>> deleteSubscription(@PathVariable String id) {
-        subscriptionService.delete(id);
+    public ResponseEntity<ApiResponse<Void>> deleteSubscription(@PathVariable String id, @RequestParam(required = false) boolean hardDelete) {
+        subscriptionService.delete(id, hardDelete);
+
         return ResponseEntity.ok(ApiResponse.success());
     }
 
@@ -50,9 +52,17 @@ public class SubscriptionController {
 
     @GetMapping("/{id}")
     @RequiresAnyPermission({Permission.OWNERSHIP, Permission.MANAGE_SUBSCRIPTIONS, Permission.VIEW_SUBSCRIPTIONS})
-    public ResponseEntity<ApiResponse<Subscription>> getSubscription(@PathVariable String id) {
-        return ResponseEntity.ok(ApiResponse.<Subscription>success()
-                .data(subscriptionService.findById(id, false).orElse(null)));
+    public ResponseEntity<ApiResponse<SubscriptionResponse>> getSubscription(@PathVariable String id) {
+        return ResponseEntity.ok(ApiResponse.<SubscriptionResponse>success()
+                .data(SubscriptionResponse.fromSubscription(subscriptionService.findById(id, false)
+                        .orElseThrow(SubscriptionNotFoundException::new))));
+    }
+
+    @GetMapping("/")
+    @RequiresAnyPermission({Permission.MANAGE_SUBSCRIPTIONS, Permission.VIEW_SUBSCRIPTIONS})
+    public ResponseEntity<ApiResponse<SubscriptionsResponse>> getSubscriptions(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(ApiResponse.<SubscriptionsResponse>success()
+                .data(SubscriptionsResponse.fromPaginatedSubscriptions(subscriptionService.findAll(PageRequest.of(page, size), false))));
     }
 
 

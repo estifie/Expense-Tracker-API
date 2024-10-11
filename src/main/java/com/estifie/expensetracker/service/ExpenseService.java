@@ -12,7 +12,7 @@ public interface ExpenseService {
 
     void create(String username, ExpenseCreateDTO expenseCreateDTO);
 
-    void delete(String id);
+    void delete(String id, boolean hardDelete);
 
     Page<Expense> findByUsername(String username, Pageable pageable, boolean fetchDeleted);
 
