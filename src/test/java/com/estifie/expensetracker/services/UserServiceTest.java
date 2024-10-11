@@ -210,7 +210,7 @@ public class UserServiceTest {
 
 
         // Act
-        userService.delete("Alice");
+        userService.delete("Alice", false);
 
         // Assert
         assertNotNull(user.getDeletedAt());
