@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, String> {
-    List<Subscription> findAllByNextPaymentDate(LocalDate paymentDate);
+    List<Subscription> findAllByNextBillingDate(LocalDate paymentDate);
 
     Page<Subscription> findByUser(User user, Pageable pageable);
 
