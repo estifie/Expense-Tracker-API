@@ -3,6 +3,7 @@ package com.estifie.expensetracker.service;
 import com.estifie.expensetracker.dto.expense.ExpenseCreateDTO;
 import com.estifie.expensetracker.dto.subscription.SubscriptionCreateDTO;
 import com.estifie.expensetracker.enums.Permission;
+import com.estifie.expensetracker.exception.auth.AuthorizationException;
 import com.estifie.expensetracker.exception.subscription.SubscriptionNotFoundException;
 import com.estifie.expensetracker.exception.user.UserNotFoundException;
 import com.estifie.expensetracker.model.Subscription;
@@ -11,6 +12,9 @@ import com.estifie.expensetracker.repository.SubscriptionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Component("subscriptionService")
 public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final ExpenseService expenseService;
@@ -40,12 +45,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.save(subscription);
     }
 
-    public void deactivate(String id) {
-        Optional<Subscription> optionalSubscription = subscriptionRepository.findById(id);
-        if (optionalSubscription.isEmpty())
-            throw new SubscriptionNotFoundException();
+    public void activate(String id) {
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(SubscriptionNotFoundException::new);
 
-        Subscription subscription = optionalSubscription.get();
+        subscription.setActive(true);
+
+        subscriptionRepository.save(subscription);
+    }
+
+    public void deactivate(String id) {
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(SubscriptionNotFoundException::new);
+
         subscription.setActive(false);
 
         subscriptionRepository.save(subscription);
@@ -54,17 +66,23 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void delete(String id, boolean hardDelete) {
         Subscription subscription = subscriptionRepository.findById(id)
                 .orElseThrow(SubscriptionNotFoundException::new);
-
         subscription.setDeletedAt(LocalDateTime.now());
 
-        boolean canHardDelete = userService.hasPermission(subscription.getUser()
-                .getUsername(), Permission.HARD_DELETE_SUBSCRIPTION.name());
-
-        if (canHardDelete && hardDelete) {
-            subscriptionRepository.deleteById(id);
-        } else {
+        if (!hardDelete) {
             subscriptionRepository.save(subscription);
+            return;
         }
+
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        boolean canHardDelete =
+                userService.hasPermission(authentication.getName(), Permission.HARD_DELETE_SUBSCRIPTION.name());
+
+        if (!canHardDelete) {
+            throw new AuthorizationException("You do not have permission to perform this action");
+        }
+
+        subscriptionRepository.deleteById(id);
     }
 
     public Optional<Subscription> findById(String id, boolean fetchDeleted) {
@@ -97,4 +115,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription.updateNextBillingDate();
         subscriptionRepository.save(subscription);
     }
+
+    public boolean isOwner(String subscriptionId, String username) {
+        return findById(subscriptionId, false).map(subscription -> subscription.getUser()
+                .getUsername()
+                .equals(username)).orElse(false);
+    }
+
 }

@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface SubscriptionService {
     void create(String username, SubscriptionCreateDTO subscriptionCreateDTO);
 
+    void activate(String id);
+
     void deactivate(String id);
 
     void delete(String id, boolean hardDelete);
