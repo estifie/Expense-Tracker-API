@@ -109,5 +109,27 @@ public enum Permission {
     /**
      * Permission to batch delete subscriptions.
      */
-    BATCH_DELETE_SUBSCRIPTIONS
+    BATCH_DELETE_SUBSCRIPTIONS,
+
+    // Permissions that are related to tags
+
+    /**
+     * Permission to manage tags.
+     */
+    MANAGE_TAGS,
+
+    /**
+     * Permission to view tags.
+     */
+    VIEW_TAGS,
+
+    /**
+     * Permission to hard delete a tag.
+     */
+    HARD_DELETE_TAG,
+
+    /**
+     * Permission to batch delete tags.
+     */
+    BATCH_DELETE_TAGS
 }
