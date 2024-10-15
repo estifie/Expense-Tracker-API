@@ -52,6 +52,10 @@ public class User implements UserDetails {
     @JsonManagedReference
     private List<Expense> expenses;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Subscription> subscriptions;
+
     public User() {
         this.id = new ULID().nextULID();
         this.createdAt = LocalDateTime.now();
@@ -60,12 +64,9 @@ public class User implements UserDetails {
     }
 
     public User(String username, String password) {
-        this.id = new ULID().nextULID();
+        this();
         this.username = username;
         this.password = password;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.deletedAt = null;
     }
 
     @Override
@@ -185,5 +186,13 @@ public class User implements UserDetails {
 
     public void setExpenses(List<Expense> expenses) {
         this.expenses = expenses;
+    }
+
+    public List<Subscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(List<Subscription> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 }

@@ -1,6 +1,7 @@
 package com.estifie.expensetracker.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Table(name = "expenses")
 @Entity
@@ -33,6 +35,15 @@ public class Expense {
     @JsonBackReference
     private User user;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "expense_tag",
+            joinColumns = @JoinColumn(name = "expense_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    @JsonManagedReference
+    private Set<Tag> tags;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -49,6 +60,9 @@ public class Expense {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.deletedAt = null;
+        this.amount = BigDecimal.ZERO;
+        this.currencyCode = "USD";
+        this.note = "";
     }
 
     public Expense(BigDecimal amount, String currencyCode, String note) {
@@ -134,5 +148,21 @@ public class Expense {
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
     }
 }
