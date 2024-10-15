@@ -3,6 +3,8 @@ package com.estifie.expensetracker.dto.subscription;
 import com.estifie.expensetracker.enums.SubscriptionType;
 import com.estifie.expensetracker.model.Subscription;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,12 +12,17 @@ import java.time.LocalDate;
 public class SubscriptionCreateDTO {
     @NotBlank
     private final String name;
+
     @NotBlank
     private final LocalDate startDate;
+
     @NotBlank
     private final SubscriptionType type;
-    @NotBlank
+
+    @NotNull
+    @PositiveOrZero
     private BigDecimal amount;
+
     private String currencyCode;
 
     public SubscriptionCreateDTO(String name, BigDecimal amount, LocalDate startDate, SubscriptionType type, String currencyCode) {
