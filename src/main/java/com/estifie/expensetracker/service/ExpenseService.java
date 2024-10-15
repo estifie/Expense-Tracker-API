@@ -17,4 +17,8 @@ public interface ExpenseService {
     Page<Expense> findByUsername(String username, Pageable pageable, boolean fetchDeleted);
 
     Page<Expense> findAll(Pageable pageable, boolean fetchDeleted);
+
+    void addTag(String id, String tagName);
+
+    void removeTag(String id, String tagName);
 }

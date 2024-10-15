@@ -3,25 +3,32 @@ package com.estifie.expensetracker.service;
 import com.estifie.expensetracker.dto.expense.ExpenseCreateDTO;
 import com.estifie.expensetracker.enums.Permission;
 import com.estifie.expensetracker.exception.expense.ExpenseNotFoundException;
+import com.estifie.expensetracker.exception.tag.TagNotFoundException;
 import com.estifie.expensetracker.exception.user.UserNotFoundException;
 import com.estifie.expensetracker.model.Expense;
+import com.estifie.expensetracker.model.Tag;
 import com.estifie.expensetracker.model.User;
 import com.estifie.expensetracker.repository.ExpenseRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@Component("expenseService")
 public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final UserService userService;
+    private final TagService tagService;
 
-    public ExpenseServiceImpl(ExpenseRepository expenseRepository, UserService userService) {
+    public ExpenseServiceImpl(ExpenseRepository expenseRepository, UserService userService, TagService tagService) {
         this.expenseRepository = expenseRepository;
         this.userService = userService;
+        this.tagService = tagService;
     }
 
     public Optional<Expense> findById(String id, boolean fetchDeleted) {
@@ -38,10 +45,10 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseRepository.save(expense);
     }
 
+    // TODO change expense.getUser but instead get authenticated user
     public void delete(String id, boolean hardDelete) {
-        Expense expense =
-                expenseRepository.findById(id)
-                        .orElseThrow(ExpenseNotFoundException::new);
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(ExpenseNotFoundException::new);
 
         expense.setDeletedAt(LocalDateTime.now());
 
@@ -61,5 +68,37 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     public Page<Expense> findAll(Pageable pageable, boolean fetchDeleted) {
         return fetchDeleted ? expenseRepository.findAll(pageable) : expenseRepository.findAllByDeletedAtIsNull(pageable);
+    }
+
+    public void addTag(String expenseId, String tagName) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(ExpenseNotFoundException::new);
+        Optional<Tag> tag = tagService.findByName(tagName);
+
+        if (tag.isEmpty()) {
+            tagService.create(tagName);
+            expense.addTag(tagService.findByName(tagName)
+                    .orElseThrow(TagNotFoundException::new));
+        } else {
+            expense.addTag(tag.get());
+        }
+
+        expenseRepository.save(expense);
+    }
+
+    public void removeTag(String expenseId, String tagName) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(ExpenseNotFoundException::new);
+        Tag tag = tagService.findByName(tagName)
+                .orElseThrow(TagNotFoundException::new);
+
+        expense.removeTag(tag);
+        expenseRepository.save(expense);
+    }
+
+    public boolean isOwner(String expenseId, Authentication authentication) {
+        return findById(expenseId, false).map(expense -> expense.getUser()
+                .getUsername()
+                .equals(authentication.getName())).orElse(false);
     }
 }
