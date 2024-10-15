@@ -1,14 +1,16 @@
 package com.estifie.expensetracker.dto.expense;
 
 import com.estifie.expensetracker.model.Expense;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 
 public class ExpenseCreateDTO {
     private String currencyCode;
 
-    @NotBlank
+    @NotNull
+    @PositiveOrZero
     private BigDecimal amount;
 
     private String note;
@@ -27,11 +29,11 @@ public class ExpenseCreateDTO {
         this.currencyCode = currencyCode;
     }
 
-    public @NotBlank BigDecimal getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(@NotBlank BigDecimal amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
