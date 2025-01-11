@@ -107,12 +107,32 @@ public class UserServiceImpl implements UserService {
     }
 
     public void grantPermission(String username, String permissionName) {
-        User user = this.findByUsername(username);
-        user.getPermissions().add(permissionName);
-        userRepository.save(user);
+        try {
+            Permission.valueOf(permissionName);
+            User user = this.findByUsername(username);
+            user.getPermissions().add(permissionName);
+            userRepository.save(user);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid permission: " + permissionName);
+        }
     }
 
     public void grantPermissionBulk(String username, Set<String> permissionNames) {
+        Set<String> invalidPermissions = permissionNames.stream()
+                .filter(permissionName -> {
+                    try {
+                        Permission.valueOf(permissionName);
+                        return false;
+                    } catch (IllegalArgumentException e) {
+                        return true;
+                    }
+                })
+                .collect(java.util.stream.Collectors.toSet());
+
+        if (!invalidPermissions.isEmpty()) {
+            throw new IllegalArgumentException("Invalid permissions: " + String.join(", ", invalidPermissions));
+        }
+
         User user = this.findByUsername(username);
         user.getPermissions().addAll(permissionNames);
         userRepository.save(user);
