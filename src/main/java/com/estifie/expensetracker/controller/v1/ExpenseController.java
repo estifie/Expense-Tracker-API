@@ -3,6 +3,7 @@ package com.estifie.expensetracker.controller.v1;
 import com.estifie.expensetracker.dto.expense.ExpenseAddTagDTO;
 import com.estifie.expensetracker.dto.expense.ExpenseCreateDTO;
 import com.estifie.expensetracker.dto.expense.ExpenseRemoveTagDTO;
+import com.estifie.expensetracker.dto.expense.ExpenseUpdateDTO;
 import com.estifie.expensetracker.model.Expense;
 import com.estifie.expensetracker.response.expense.ExpensesResponse;
 import com.estifie.expensetracker.service.ExpenseService;
@@ -316,5 +317,50 @@ public class ExpenseController {
     ) {
         return ResponseEntity.ok(com.estifie.expensetracker.response.ApiResponse.<ExpensesResponse>success()
                 .data(ExpensesResponse.fromPaginatedExpenses(expenseService.findAll(PageRequest.of(page, size), false))));
+    }
+
+    @Operation(
+            summary = "Update an expense",
+            description = "Updates an existing expense. Requires either being the owner or having MANAGE_EXPENSES permission."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Expense updated successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                        "success": true
+                                    }
+                                    """)
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid request body"),
+            @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
+            @ApiResponse(responseCode = "404", description = "Expense not found")
+    })
+    @PutMapping("/{id}")
+    @PreAuthorize("@expenseService.isOwner(#id, authentication) or hasAuthority('MANAGE_EXPENSES')")
+    public ResponseEntity<com.estifie.expensetracker.response.ApiResponse<Void>> updateExpense(
+            @Parameter(description = "Expense ID") @PathVariable String id,
+            @Parameter(
+                    description = "Updated expense details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ExpenseUpdateDTO.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                        "currencyCode": "USD",
+                                        "amount": 75.00,
+                                        "note": "Updated grocery shopping"
+                                    }
+                                    """)
+                    )
+            )
+            @Valid @RequestBody ExpenseUpdateDTO expenseUpdateDTO
+    ) {
+        expenseService.update(id, expenseUpdateDTO);
+        return ResponseEntity.ok(com.estifie.expensetracker.response.ApiResponse.success());
     }
 }
