@@ -9,6 +9,10 @@ public class ExpenseRemoveTagDTO {
     @Schema(description = "The name of the tag to remove", example = "groceries")
     private String tag;
 
+    // Required by Jackson for JSON deserialization
+    public ExpenseRemoveTagDTO() {
+    }
+
     public ExpenseRemoveTagDTO(String tag) {
         this.tag = tag;
     }
