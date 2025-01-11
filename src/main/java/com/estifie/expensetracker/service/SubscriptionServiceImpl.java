@@ -116,10 +116,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.save(subscription);
     }
 
-    public boolean isOwner(String subscriptionId, String username) {
+    public boolean isOwner(String subscriptionId, Authentication authentication) {
         return findById(subscriptionId, false).map(subscription -> subscription.getUser()
                 .getUsername()
-                .equals(username)).orElse(false);
+                .equals(authentication.getName())).orElse(false);
     }
 
 }

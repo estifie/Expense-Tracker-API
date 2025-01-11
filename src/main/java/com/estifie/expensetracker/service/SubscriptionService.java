@@ -4,6 +4,7 @@ import com.estifie.expensetracker.dto.subscription.SubscriptionCreateDTO;
 import com.estifie.expensetracker.model.Subscription;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 
 import java.util.Optional;
 
@@ -22,4 +23,5 @@ public interface SubscriptionService {
 
     Page<Subscription> findAll(Pageable pageable, boolean fetchDeleted);
 
+    boolean isOwner(String subscriptionId, Authentication authentication);
 }
