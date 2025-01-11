@@ -1,18 +1,23 @@
 package com.estifie.expensetracker.dto.expense;
 
 import com.estifie.expensetracker.model.Expense;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 
+@Schema(description = "Data transfer object for creating a new expense")
 public class ExpenseCreateDTO {
+    @Schema(description = "The currency code for the expense (e.g., USD, EUR)", example = "USD", defaultValue = "USD")
     private String currencyCode;
 
     @NotNull
     @PositiveOrZero
+    @Schema(description = "The amount of the expense", example = "50.00", minimum = "0")
     private BigDecimal amount;
 
+    @Schema(description = "Optional note about the expense", example = "Grocery shopping", maxLength = 1024)
     private String note;
 
     public ExpenseCreateDTO(String currencyCode, BigDecimal amount, String note) {

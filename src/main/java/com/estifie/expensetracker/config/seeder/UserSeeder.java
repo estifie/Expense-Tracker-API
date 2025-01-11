@@ -1,6 +1,7 @@
 package com.estifie.expensetracker.config.seeder;
 
 import com.estifie.expensetracker.dto.auth.UserRegisterDTO;
+import com.estifie.expensetracker.model.User;
 import com.estifie.expensetracker.repository.UserRepository;
 import com.estifie.expensetracker.service.AuthenticationService;
 import com.estifie.expensetracker.service.UserService;
@@ -49,9 +50,10 @@ public class UserSeeder implements ApplicationRunner {
         authenticationService.register(userRegisterDTO);
 
         try {
-            userRepository.findByUsername(username);
-
-            userService.grantPermissionBulk(username, Set.of("MANAGE_PERMISSIONS", "MANAGE_USERS", "MANAGE_EXPENSES"));
+            User user = userRepository.findByUsername(username).orElseThrow();
+            user.getPermissions().addAll(Set.of("MANAGE_PERMISSIONS",
+                    "MANAGE_USERS", "MANAGE_EXPENSES"));
+            userRepository.save(user);
         } catch (Exception e) {
             logger.error("Seeding user failed. An error occurred while registering user");
             return;
