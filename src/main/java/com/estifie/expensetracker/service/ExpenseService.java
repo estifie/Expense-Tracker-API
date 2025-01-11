@@ -1,6 +1,7 @@
 package com.estifie.expensetracker.service;
 
 import com.estifie.expensetracker.dto.expense.ExpenseCreateDTO;
+import com.estifie.expensetracker.dto.expense.ExpenseUpdateDTO;
 import com.estifie.expensetracker.model.Expense;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,8 @@ public interface ExpenseService {
     Optional<Expense> findById(String id, boolean fetchDeleted);
 
     void create(String username, ExpenseCreateDTO expenseCreateDTO);
+
+    void update(String id, ExpenseUpdateDTO expenseUpdateDTO);
 
     void delete(String id, boolean hardDelete);
 

@@ -1,6 +1,7 @@
 package com.estifie.expensetracker.service;
 
 import com.estifie.expensetracker.dto.expense.ExpenseCreateDTO;
+import com.estifie.expensetracker.dto.expense.ExpenseUpdateDTO;
 import com.estifie.expensetracker.enums.Permission;
 import com.estifie.expensetracker.exception.expense.ExpenseNotFoundException;
 import com.estifie.expensetracker.exception.tag.TagNotFoundException;
@@ -45,19 +46,25 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseRepository.save(expense);
     }
 
-    // TODO change expense.getUser but instead get authenticated user
+    public void update(String id, ExpenseUpdateDTO expenseUpdateDTO) {
+        Expense expense = expenseRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(ExpenseNotFoundException::new);
+
+        expense.setAmount(expenseUpdateDTO.getAmount());
+        expense.setCurrencyCode(expenseUpdateDTO.getCurrencyCode());
+        expense.setNote(expenseUpdateDTO.getNote());
+
+        expenseRepository.save(expense);
+    }
+
     public void delete(String id, boolean hardDelete) {
         Expense expense = expenseRepository.findById(id)
                 .orElseThrow(ExpenseNotFoundException::new);
 
-        expense.setDeletedAt(LocalDateTime.now());
-
-        boolean canHardDelete = userService.hasPermission(expense.getUser()
-                .getUsername(), Permission.HARD_DELETE_EXPENSE.name());
-
-        if (hardDelete && canHardDelete) {
-            expenseRepository.deleteById(id);
+        if (hardDelete) {
+            expenseRepository.delete(expense);
         } else {
+            expense.setDeletedAt(LocalDateTime.now());
             expenseRepository.save(expense);
         }
     }
